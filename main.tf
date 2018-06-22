@@ -31,7 +31,7 @@ resource "aws_autoscaling_group" "vault" {
   name                      = "vault - ${aws_launch_configuration.vault.name}"
   launch_configuration      = "${aws_launch_configuration.vault.name}"
   availability_zones        = ["${var.availability_zone}"]
-  min_size                  = "${var.es}"
+  min_size                  = "${var.servers}"
   max_size                  = "${var.servers}"
   desired_capacity          = "${var.servers}"
   health_check_grace_period = 15
@@ -61,7 +61,7 @@ resource "aws_autoscaling_group" "vault" {
 resource "aws_launch_configuration" "vault" {
   image_id        = "${data.aws_ami.ubuntu.id}"
   instance_type   = "${var.instance_type}"
-  key_name        = "${var.key-name}"
+  key_name        = "${var.key_name}"
   security_groups = ["${aws_security_group.vault.id}"]
   user_data       = "${template_file.install.rendered}"
 }
@@ -131,7 +131,7 @@ resource "aws_elb" "vault" {
     healthy_threshold   = 2
     unhealthy_threshold = 3
     timeout             = 5
-    target              = "${var.elb-health-check}"
+    target              = "${var.elb_health_check}"
     interval            = 15
   }
 }

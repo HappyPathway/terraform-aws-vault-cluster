@@ -69,7 +69,7 @@ resource "aws_launch_configuration" "vault" {
 resource "aws_security_group" "vault" {
   name        = "vault"
   description = "Vault servers"
-  vpc_id      = "${var.vpc-id}"
+  vpc_id      = "${var.vpc_id}"
 }
 
 resource "aws_security_group_rule" "vault-ssh" {

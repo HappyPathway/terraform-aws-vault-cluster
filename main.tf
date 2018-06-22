@@ -32,8 +32,8 @@ resource "aws_autoscaling_group" "vault" {
   launch_configuration      = "${aws_launch_configuration.vault.name}"
   availability_zones        = ["${var.availability_zone}"]
   min_size                  = "${var.es}"
-  max_size                  = "${var.nodes}"
-  desired_capacity          = "${var.nodes}"
+  max_size                  = "${var.servers}"
+  desired_capacity          = "${var.servers}"
   health_check_grace_period = 15
   health_check_type         = "EC2"
   vpc_zone_identifier       = ["${var.subnet}"]
@@ -71,7 +71,7 @@ resource "aws_launch_configuration" "vault" {
 resource "aws_security_group" "vault" {
   name        = "vault"
   description = "Vault servers"
-  vpc_id      = "${var.vpc-id}"
+  vpc_id      = "${var.vpc_id}"
 }
 
 resource "aws_security_group_rule" "vault-ssh" {
@@ -139,7 +139,7 @@ resource "aws_elb" "vault" {
 resource "aws_security_group" "elb" {
   name        = "vault-elb"
   description = "Vault ELB"
-  vpc_id      = "${var.vpc-id}"
+  vpc_id      = "${var.vpc_id}"
 }
 
 resource "aws_security_group_rule" "vault-elb-http" {

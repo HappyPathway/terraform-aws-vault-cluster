@@ -2,9 +2,11 @@ resource "template_file" "install" {
   template = "${file("${path.module}/scripts/install.sh.tpl")}"
 
   vars {
-    download_url  = "${var.download_url}"
-    config        = "${var.config}"
-    extra-install = "${var.extra_install}"
+    vault_download_url  = "${var.vault_download_url}"
+    consul_download_url = "${var.consul_download_url}"
+    consul_cluster      = "${var.consul_cluster}"
+    config              = "${var.config}"
+    extra-install       = "${var.extra_install}"
   }
 }
 
@@ -13,7 +15,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-14.04-amd64-server-*"]
   }
 
   filter {
@@ -29,9 +31,9 @@ resource "aws_autoscaling_group" "vault" {
   name                      = "vault - ${aws_launch_configuration.vault.name}"
   launch_configuration      = "${aws_launch_configuration.vault.name}"
   availability_zones        = ["${var.availability_zone}"]
-  min_size                  = "${var.servers}"
-  max_size                  = "${var.servers}"
-  desired_capacity          = "${var.servers}"
+  min_size                  = "${var.es}"
+  max_size                  = "${var.nodes}"
+  desired_capacity          = "${var.nodes}"
   health_check_grace_period = 15
   health_check_type         = "EC2"
   vpc_zone_identifier       = ["${var.subnet}"]
@@ -59,7 +61,7 @@ resource "aws_autoscaling_group" "vault" {
 resource "aws_launch_configuration" "vault" {
   image_id        = "${data.aws_ami.ubuntu.id}"
   instance_type   = "${var.instance_type}"
-  key_name        = "${var.key_name}"
+  key_name        = "${var.key-name}"
   security_groups = ["${aws_security_group.vault.id}"]
   user_data       = "${template_file.install.rendered}"
 }
@@ -69,7 +71,7 @@ resource "aws_launch_configuration" "vault" {
 resource "aws_security_group" "vault" {
   name        = "vault"
   description = "Vault servers"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id      = "${var.vpc-id}"
 }
 
 resource "aws_security_group_rule" "vault-ssh" {
@@ -129,7 +131,7 @@ resource "aws_elb" "vault" {
     healthy_threshold   = 2
     unhealthy_threshold = 3
     timeout             = 5
-    target              = "${var.elb_health_check}"
+    target              = "${var.elb-health-check}"
     interval            = 15
   }
 }
@@ -137,7 +139,7 @@ resource "aws_elb" "vault" {
 resource "aws_security_group" "elb" {
   name        = "vault-elb"
   description = "Vault ELB"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id      = "${var.vpc-id}"
 }
 
 resource "aws_security_group_rule" "vault-elb-http" {

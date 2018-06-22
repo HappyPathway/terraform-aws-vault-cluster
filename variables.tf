@@ -2,9 +2,13 @@
 // Vault settings
 //-------------------------------------------------------------------
 
-variable "download_url" {
+variable "vault_download_url" {
   default     = "https://releases.hashicorp.com/vault/0.10.3/vault_0.10.3_linux_amd64.zip"
   description = "URL to download Vault"
+}
+
+variable "consul_download_url" {
+  description = "URL to download consul"
 }
 
 variable "config" {
@@ -57,4 +61,9 @@ variable "resource_tags" {
   type        = "map"
   default     = {}
   description = "Resource Tags. Get applied anywhere tags can be applied"
+}
+
+variable "consul_cluster" {
+  type        = "string"
+  description = "IP Address of cluster bootstrap host"
 }

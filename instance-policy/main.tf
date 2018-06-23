@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "hashistack" {
+data "aws_iam_policy_document" "vault" {
   statement {
     sid       = "AllowSelfAssembly"
     effect    = "Allow"
@@ -49,18 +49,18 @@ data "aws_iam_policy_document" "hashistack" {
   }
 }
 
-resource "aws_iam_role" "hashistack" {
+resource "aws_iam_role" "vault" {
   name               = "vault-${lookup(var.resource_tags, "ClusterName")}"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
-resource "aws_iam_role_policy" "hashistack" {
+resource "aws_iam_role_policy" "vault" {
   name   = "vault-${lookup(var.resource_tags, "ClusterName")}"
   role   = "${aws_iam_role.hashistack.id}"
   policy = "${data.aws_iam_policy_document.hashistack.json}"
 }
 
-resource "aws_iam_instance_profile" "hashistack" {
+resource "aws_iam_instance_profile" "vault" {
   name = "vault-${lookup(var.resource_tags, "ClusterName")}"
   role = "${aws_iam_role.hashistack.name}"
 }

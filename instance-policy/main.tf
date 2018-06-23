@@ -56,11 +56,11 @@ resource "aws_iam_role" "vault" {
 
 resource "aws_iam_role_policy" "vault" {
   name   = "vault-${lookup(var.resource_tags, "ClusterName")}"
-  role   = "${aws_iam_role.hashistack.id}"
-  policy = "${data.aws_iam_policy_document.hashistack.json}"
+  role   = "${aws_iam_role.vault.id}"
+  policy = "${data.aws_iam_policy_document.vault.json}"
 }
 
 resource "aws_iam_instance_profile" "vault" {
   name = "vault-${lookup(var.resource_tags, "ClusterName")}"
-  role = "${aws_iam_role.hashistack.name}"
+  role = "${aws_iam_role.vault.name}"
 }

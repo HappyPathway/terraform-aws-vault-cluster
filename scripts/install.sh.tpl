@@ -91,3 +91,7 @@ sudo start consul
 
 # Start Vault
 sudo start vault
+root_token=$$(/usr/local/bin/vault operator init -stored-shares=1 -recovery-shares=1 -recovery-threshold=1 -key-shares=1 -key-threshold=1 | grep 'Initial Root Token: '| awk '{print $$NF }')
+consul kv put service/vault/token $${root_token}
+sudo stop vault
+sudo start vault

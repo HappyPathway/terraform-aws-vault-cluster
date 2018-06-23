@@ -41,7 +41,7 @@ resource "aws_autoscaling_group" "vault" {
 
   tag {
     key                 = "Name"
-    value               = "vault"
+    value               = "${lookup(var.resource_tags, "ClusterName")}"
     propagate_at_launch = true
   }
 
@@ -58,12 +58,20 @@ resource "aws_autoscaling_group" "vault" {
   }
 }
 
+module "vault_instance_profile" {
+  region           = "${var.region}"
+  source           = "./instance-policy"
+  environment_name = "${random_id.environment_name.hex}"
+  kms_arn          = "${aws_kms_key.vault.arn}"
+}
+
 resource "aws_launch_configuration" "vault" {
-  image_id        = "${data.aws_ami.ubuntu.id}"
-  instance_type   = "${var.instance_type}"
-  key_name        = "${var.key_name}"
-  security_groups = ["${aws_security_group.vault.id}"]
-  user_data       = "${template_file.install.rendered}"
+  image_id             = "${data.aws_ami.ubuntu.id}"
+  instance_type        = "${var.instance_type}"
+  key_name             = "${var.key_name}"
+  security_groups      = ["${aws_security_group.vault.id}"]
+  user_data            = "${template_file.install.rendered}"
+  iam_instance_profile = "${module.vault_instance_profile.policy}"
 }
 
 // Security group for Vault allows SSH and HTTP access (via "tcp" in

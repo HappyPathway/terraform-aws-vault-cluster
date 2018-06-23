@@ -49,7 +49,7 @@ script
   BIND=`ifconfig eth0 | grep "inet addr" | awk '{ print substr($2,6) }'`
   exec /usr/local/bin/consul agent \
     -join=${consul_cluster} \
-    -bind=$BIND \
+    -bind=\$${BIND} \
     -config-dir="/etc/consul.d" \
     -data-dir=/opt/consul/data \
     -client 0.0.0.0 \

@@ -63,6 +63,7 @@ module "vault_instance_profile" {
   source           = "./instance-policy"
   environment_name = "${random_id.environment_name.hex}"
   kms_arn          = "${aws_kms_key.vault.arn}"
+  resource_tags    = "${var.resource_tags}"
 }
 
 resource "aws_launch_configuration" "vault" {

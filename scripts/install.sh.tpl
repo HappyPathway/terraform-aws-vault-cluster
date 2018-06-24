@@ -17,6 +17,8 @@ sudo unzip consul
 sudo mv vault /usr/local/bin
 sudo mv consul /usr/local/bin
 
+sudo mkdir /etc/consul.d
+
 sudo chmod 0755 /usr/local/bin/vault
 sudo chown root:root /usr/local/bin/vault
 
@@ -24,11 +26,37 @@ sudo chmod 0755 /usr/local/bin/consul
 sudo chown root:root /usr/local/bin/consul
 
 # Setup the configuration
-cat <<EOF >/tmp/vault-config
-${config}
+#consul conf
+cat << EOF > /etc/vault.d/vault-consul.hcl
+backend "consul" {
+  address = "127.0.0.1:8500"
+  path    = "vault/"
+}
 EOF
-sudo mv /tmp/vault-config /usr/local/etc/vault-config.json
 
+#server conf
+cat << EOF > /etc/vault.d/vault-server.hcl
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = 1
+}
+ui=true
+EOF
+
+#telemetry conf
+#cat << EOF > /etc/vault.d/vault-telemetry.hcl
+#telemetry {
+#  statsd_address = "127.0.0.1:8125"
+#}
+#EOF
+
+#kms conf
+cat << EOF > /etc/vault.d/vault-kms.hcl
+seal "awskms" {
+  region     = "${region}"
+  kms_key_id = "${kms_id}"
+}
+EOF
 
 # Setup the init scripts
 cat <<EOF >/tmp/consul_upstart
@@ -74,7 +102,7 @@ script
   export GOMAXPROCS=`nproc`
 
   exec /usr/local/bin/vault server \
-    -config="/usr/local/etc/vault-config.json" \
+    -config=/etc/vault.d \
     \$${VAULT_FLAGS} \
     >>/var/log/vault.log 2>&1
 end script
@@ -91,7 +119,9 @@ sudo start consul
 
 # Start Vault
 sudo start vault
+export VAULT_ADDR=http://127.0.0.1:8200
 root_token=$$(/usr/local/bin/vault operator init -stored-shares=1 -recovery-shares=1 -recovery-threshold=1 -key-shares=1 -key-threshold=1 | grep 'Initial Root Token: '| awk '{print $$NF }')
+echo $${root_token} > /tmp/vault.token
 consul kv put service/vault/token $${root_token}
 sudo stop vault
 sudo start vault

@@ -7,23 +7,25 @@ resource "template_file" "install" {
     consul_cluster      = "${var.consul_cluster}"
     config              = "${var.config}"
     extra-install       = "${var.extra_install}"
+    region              = "${var.region}"
+    kms_id              = "${aws_kms_key.vault.key_id}"
   }
 }
 
-data "aws_ami" "ubuntu" {
+data aws_ami "hashistack" {
   most_recent = true
+  owners      = ["753646501470"]                      # hc-se-demos Hashicorp Demos New Account
+  name_regex  = "llarsen-hashistack-server-ent-RHEL*"
 
   filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"]
+    name   = "tag-key"
+    values = ["OS"]
   }
 
   filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+    name   = "tag-value"
+    values = ["RHEL"]
   }
-
-  owners = ["099720109477"] # Canonical
 }
 
 // We launch Vault into an ASG so that it can properly bring them up for us.
@@ -67,7 +69,7 @@ module "vault_instance_profile" {
 }
 
 resource "aws_launch_configuration" "vault" {
-  image_id             = "${data.aws_ami.ubuntu.id}"
+  image_id             = "${data.aws_ami.hashistack.id}"
   instance_type        = "${var.instance_type}"
   key_name             = "${var.key_name}"
   security_groups      = ["${aws_security_group.vault.id}"]

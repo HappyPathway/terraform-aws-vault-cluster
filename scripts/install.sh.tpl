@@ -1,30 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Install packages
-sudo apt-get update -y
-sudo apt-get install -y curl unzip
-
-# Download Vault into some temporary directory
-curl -L "${consul_download_url}" > /tmp/consul.zip
-curl -L "${vault_download_url}" > /tmp/vault.zip
-
-# Unzip it
-cd /tmp
-sudo unzip vault.zip
-sudo unzip consul
-
-sudo mv vault /usr/local/bin
-sudo mv consul /usr/local/bin
-
-sudo mkdir /etc/consul.d
-
-sudo chmod 0755 /usr/local/bin/vault
-sudo chown root:root /usr/local/bin/vault
-
-sudo chmod 0755 /usr/local/bin/consul
-sudo chown root:root /usr/local/bin/consul
-
 # Setup the configuration
 #consul conf
 cat << EOF > /etc/vault.d/vault-consul.hcl

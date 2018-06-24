@@ -3,12 +3,23 @@ set -e
 
 # Setup the configuration
 #consul conf
+if [ -z "${consul_token}" ]
+then
 cat << EOF > /etc/vault.d/vault-consul.hcl
 backend "consul" {
   address = "127.0.0.1:8500"
   path    = "vault-${hash}/"
 }
 EOF
+else
+cat << EOF > /etc/vault.d/vault-consul.hcl
+backend "consul" {
+  address = "127.0.0.1:8500"
+  path    = "vault-${hash}/"
+  token = "${consul_token}"
+}
+EOF
+fi
 
 #server conf
 cat << EOF > /etc/vault.d/vault-server.hcl

@@ -68,6 +68,11 @@ variable "consul_cluster" {
   description = "IP Address of cluster bootstrap host"
 }
 
+variable "consul_token" {
+  default     = ""
+  description = "ACL Token for Consul Cluster"
+}
+
 variable "region" {
   type        = "string"
   description = "AWS Region"

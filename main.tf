@@ -5,11 +5,35 @@ resource "template_file" "install" {
     vault_download_url  = "${var.vault_download_url}"
     consul_download_url = "${var.consul_download_url}"
     consul_cluster      = "${var.consul_cluster}"
+    consul_token        = "${var.consul_token}"
     config              = "${var.config}"
     extra-install       = "${var.extra_install}"
     region              = "${var.region}"
     kms_id              = "${aws_kms_key.vault.key_id}"
     hash                = "${random_id.environment_name.hex}"
+  }
+}
+
+resource "consul_keys" "vault_cluster_token" {
+  count      = "${length(split("", var.consul_token)) > 0 ? 1 :0}"
+  datacenter = "${var.consul_datacenter}"
+  token      = "${var.consul_token}"
+
+  # Set the CNAME of our load balancer as a key
+  key {
+    path  = "service/vault-${random_id.environment_name.hex}/elb_address"
+    value = "${aws_elb.vault.dns_name}"
+  }
+}
+
+resource "consul_keys" "vault_cluster_no_token" {
+  count      = "${length(split("", var.consul_token)) == 0 ? 1 : 0}"
+  datacenter = "${var.consul_datacenter}"
+
+  # Set the CNAME of our load balancer as a key
+  key {
+    path  = "service/vault-${random_id.environment_name.hex}/elb_address"
+    value = "${aws_elb.vault.dns_name}"
   }
 }
 

@@ -106,4 +106,4 @@ function vault_init {
   sudo start vault
 }
 
-consul kv get consul kv put service/vault-${hash}/token || vault_init
+consul kv get service/vault-${hash}/token || vault_init

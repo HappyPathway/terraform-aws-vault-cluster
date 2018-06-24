@@ -14,6 +14,11 @@ resource "template_file" "install" {
   }
 }
 
+provider "consul" {
+  address    = "${var.consul_cluster}"
+  datacenter = "${var.consul_datacenter}"
+}
+
 resource "consul_keys" "vault_cluster_token" {
   count      = "${length(split("", var.consul_token)) > 0 ? 1 :0}"
   datacenter = "${var.consul_datacenter}"

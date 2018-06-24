@@ -13,7 +13,6 @@ resource "template_file" "install" {
 }
 
 data "aws_ami" "hashistack" {
-  owners      = ["753646501470"]
   most_recent = true
 
   filter {

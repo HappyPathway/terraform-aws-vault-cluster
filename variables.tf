@@ -73,6 +73,11 @@ variable "consul_token" {
   description = "ACL Token for Consul Cluster"
 }
 
+variable "consul_datacenter" {
+  default     = "dc1"
+  description = "Consul DataCenter"
+}
+
 variable "region" {
   type        = "string"
   description = "AWS Region"

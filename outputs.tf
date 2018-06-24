@@ -12,6 +12,10 @@ output "elb_security_group" {
   value = "${aws_security_group.elb.id}"
 }
 
+output "vault_elb" {
+  value = "${aws_elb.vault.id}"
+}
+
 output "cluster_hash" {
   value = "${random_id.environment_name.hex}"
 }

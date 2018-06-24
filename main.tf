@@ -14,6 +14,7 @@ resource "template_file" "install" {
 
 data "aws_ami" "hashistack" {
   most_recent = true
+  owners      = ["753646501470"]
 
   filter {
     name   = "state"

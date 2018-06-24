@@ -105,7 +105,6 @@ function vault_init {
   consul kv put service/vault-${hash}/token $${root_token}
   sudo stop vault
   sudo start vault
-  consul kv delete service/vault-${hash}/locked
 }
 
 

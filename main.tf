@@ -9,6 +9,7 @@ resource "template_file" "install" {
     extra-install       = "${var.extra_install}"
     region              = "${var.region}"
     kms_id              = "${aws_kms_key.vault.key_id}"
+    hash                = "${random_id.environment_name.hex}"
   }
 }
 

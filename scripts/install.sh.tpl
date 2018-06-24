@@ -119,7 +119,7 @@ function vault_init {
   echo "Running init"
   root_token=$$(/usr/local/bin/vault operator init -stored-shares=1 -recovery-shares=1 -recovery-threshold=1 -key-shares=1 -key-threshold=1 | grep 'Initial Root Token: '| awk '{print $$NF }')
   echo "Checking if token exists, if doesn't then set it"
-  consul kv get service/vault-${hash}/token || consul kv put service/vault-${hash}/token ${root_token}
+  consul kv get service/vault-${hash}/token || consul kv put service/vault-${hash}/token $${root_token}
   echo "Stopping vault"
   sudo stop vault
   echo "Startinv Vault"

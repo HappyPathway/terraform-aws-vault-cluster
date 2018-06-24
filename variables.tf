@@ -78,5 +78,5 @@ variable "service_name" {
 }
 
 variable "service_version" {
-  default = "1.0.0"
+  default = "1.0.1"
 }

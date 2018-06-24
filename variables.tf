@@ -72,3 +72,11 @@ variable "region" {
   type        = "string"
   description = "AWS Region"
 }
+
+variable "service_name" {
+  default = "vault-cluster"
+}
+
+variable "service_version" {
+  default = "1.0.0"
+}

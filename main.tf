@@ -12,19 +12,23 @@ resource "template_file" "install" {
   }
 }
 
-data aws_ami "hashistack" {
+data "aws_ami" "hashistack" {
+  owners      = ["753646501470"]
   most_recent = true
-  owners      = ["753646501470"]                      # hc-se-demos Hashicorp Demos New Account
-  name_regex  = "llarsen-hashistack-server-ent-RHEL*"
 
   filter {
-    name   = "tag-key"
-    values = ["OS"]
+    name   = "state"
+    values = ["available"]
   }
 
   filter {
-    name   = "tag-value"
-    values = ["RHEL"]
+    name   = "tag:service_name"
+    values = ["${var.service_name}"]
+  }
+
+  filter {
+    name   = "tag:service_version"
+    values = ["${var.service_version}"]
   }
 }
 

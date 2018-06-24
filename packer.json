@@ -54,8 +54,7 @@
           "validation_client_name": "{{user `chef_client_name` }}",
           "json": {
             "encrypted_data_bag_secret_path": "/tmp/packer-chef-client/encrypted_data_bag_secret",
-            "region": "{{ user `region`  }}",
-            
+            "region": "{{ user `region`  }}"
           }
       }
     ]

@@ -3,11 +3,34 @@ set -e
 
 # Setup the configuration
 #consul conf
-cat << EOF > /etc/consul.d/consul-mode.json
+hostname=$$(hostname)
+ip_address=$$(ifconfig eth0 | grep "inet addr" | awk '{ print substr($2,6) })
+
+cat << EOF > /etc/consul.d/consul-join.hcl
+{
+    "retry_join": ["provider=aws tag_key=ConsulServer tag_value=${env}"]
+}
+EOF
+
+cat << EOF > /etc/consul.d/consul-type.json
 {
   "server": false
 }
 EOF
+
+cat << EOF > /etc/consul.d/consul-node.json
+{
+  "advertise_addr": "$${ip_address}",
+  "node_name": "$${hostname}"
+}
+EOF
+
+cat << EOF > /etc/consul.d/consul-datacenter.json
+{
+  "datacenter": "${datacenter}"
+}
+EOF
+
 if [ -z "${consul_token}" ]
 then
 cat << EOF > /etc/vault.d/vault-consul.hcl
@@ -34,9 +57,6 @@ seal "awskms" {
   kms_key_id = "${kms_id}"
 }
 EOF
-
-# Extra install steps (if any)
-${extra-install}
 
 # Start Consul
 sudo start consul

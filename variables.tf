@@ -58,11 +58,11 @@ variable "region" {
 }
 
 variable "service_name" {
-  default = "vault-cluster"
+  default = "vault"
 }
 
 variable "service_version" {
-  default = "1.0.1"
+  default = "1.2.0"
 }
 
 variable "env" {}

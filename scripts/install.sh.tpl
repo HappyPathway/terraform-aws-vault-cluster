@@ -59,6 +59,7 @@ seal "awskms" {
 EOF
 
 # Start Consul
+sudo stop consul
 sudo start consul
 
 # Start Vault

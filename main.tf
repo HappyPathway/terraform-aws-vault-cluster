@@ -64,6 +64,18 @@ resource "aws_autoscaling_group" "vault" {
     value               = "${lookup(var.resource_tags, "TTL")}"
     propagate_at_launch = true
   }
+
+  tag {
+    key                 = "Role"
+    value               = "vault"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Env"
+    value               = "${var.env}"
+    propagate_at_launch = true
+  }
 }
 
 module "vault_instance_profile" {

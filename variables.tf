@@ -90,3 +90,5 @@ variable "service_name" {
 variable "service_version" {
   default = "1.0.1"
 }
+
+variable "env" {}

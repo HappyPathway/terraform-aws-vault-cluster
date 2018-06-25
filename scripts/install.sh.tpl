@@ -63,6 +63,7 @@ sudo stop consul
 sudo start consul
 
 # Start Vault
+sudo stop vault || echo 
 sudo start vault
 export VAULT_ADDR=http://127.0.0.1:8200
 echo 'export VAULT_ADDR=http://127.0.0.1:8200 > /etc/profile.d/vault.sh'

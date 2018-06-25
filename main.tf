@@ -33,7 +33,7 @@ resource "aws_autoscaling_group" "vault" {
 
   tag {
     key                 = "Name"
-    value               = "${lookup(var.resource_tags, "ClusterName")}"
+    value               = "${lookup(var.resource_tags, "ClusterName")}-${var.env}"
     propagate_at_launch = true
   }
 

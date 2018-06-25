@@ -1,29 +1,3 @@
-//-------------------------------------------------------------------
-// Vault settings
-//-------------------------------------------------------------------
-
-variable "vault_download_url" {
-  default     = "https://releases.hashicorp.com/vault/0.10.3/vault_0.10.3_linux_amd64.zip"
-  description = "URL to download Vault"
-}
-
-variable "consul_download_url" {
-  description = "URL to download consul"
-}
-
-variable "config" {
-  description = "Configuration (text) for Vault"
-}
-
-variable "extra_install" {
-  default     = ""
-  description = "Extra commands to run in the install script"
-}
-
-//-------------------------------------------------------------------
-// AWS settings
-//-------------------------------------------------------------------
-
 variable "availability_zone" {
   default     = "us-east-1a"
   description = "Availability zones for launching the Vault instances"

@@ -58,15 +58,20 @@ seal "awskms" {
 }
 EOF
 
+export VAULT_ADDR=http://127.0.0.1:8200
+export CONSUL_HTTP_ADDR=http://127.0.0.1:8500
+echo 'export VAULT_ADDR=http://127.0.0.1:8200' > /etc/profile.d/vault.sh
+echo 'export CONSUL_HTTP_ADDR=http://127.0.0.1:8500' > /etc/profile.d/consul.sh
+
 # Start Consul
 sudo stop consul
 sudo start consul
+until consul members; do echo "Consul Not Ready" && sleep 10; done
 
 # Start Vault
 sudo stop vault || echo 
-sudo start vault
-export VAULT_ADDR=http://127.0.0.1:8200
-echo 'export VAULT_ADDR=http://127.0.0.1:8200 > /etc/profile.d/vault.sh'
+sudo start vault || echo
+until vault status; do echo "Vault Not Ready" && sleep 10; done
 
 function vault_init {
   echo "setting lock"

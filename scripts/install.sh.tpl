@@ -71,7 +71,7 @@ until consul members; do echo "Consul Not Ready" && sleep 10; done
 # Start Vault
 sudo stop vault || echo 
 sudo start vault || echo
-until vault status; do echo "Vault Not Ready" && sleep 10; done
+until lsof -i:8200; do echo "Vault Not Ready" && sleep 10; done
 
 function vault_init {
   echo "setting lock"

@@ -88,3 +88,5 @@ function vault_init {
 
 consul kv get service/vault-${hash}/locked 2>/dev/null || vault_init
 sudo restart vault
+
+vault write sys/license text=${vault_license}

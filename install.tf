@@ -9,5 +9,6 @@ resource "template_file" "install" {
     hash           = "${random_id.environment_name.hex}"
     datacenter     = "${var.consul_datacenter}"
     env            = "${var.env}"
+    vault_license  = "${var.vault_license}"
   }
 }

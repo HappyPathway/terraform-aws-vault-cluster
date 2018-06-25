@@ -68,3 +68,5 @@ variable "service_version" {
 variable "env" {}
 
 variable "consul_cluster_sg" {}
+
+variable "vault_license" {}

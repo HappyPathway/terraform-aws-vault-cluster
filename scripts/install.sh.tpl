@@ -4,7 +4,7 @@ set -e
 # Setup the configuration
 #consul conf
 hostname=$$(hostname)
-ip_address=$$(ifconfig eth0 | grep "inet addr" | awk '{ print substr($2,6) })
+ip_address=$$(ifconfig eth0 | grep "inet addr" | awk '{ print substr($2,6) }')
 
 cat << EOF > /etc/consul.d/consul-join.hcl
 {

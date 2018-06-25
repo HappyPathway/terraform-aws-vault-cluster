@@ -3,6 +3,11 @@ set -e
 
 # Setup the configuration
 #consul conf
+cat << EOF > /etc/consul.d/consul-mode.json
+{
+  "server": false
+}
+EOF
 if [ -z "${consul_token}" ]
 then
 cat << EOF > /etc/vault.d/vault-consul.hcl
@@ -21,21 +26,6 @@ backend "consul" {
 EOF
 fi
 
-#server conf
-cat << EOF > /etc/vault.d/vault-server.hcl
-listener "tcp" {
-  address     = "0.0.0.0:8200"
-  tls_disable = 1
-}
-ui=true
-EOF
-
-#telemetry conf
-#cat << EOF > /etc/vault.d/vault-telemetry.hcl
-#telemetry {
-#  statsd_address = "127.0.0.1:8125"
-#}
-#EOF
 
 #kms conf
 cat << EOF > /etc/vault.d/vault-kms.hcl
@@ -45,59 +35,6 @@ seal "awskms" {
 }
 EOF
 
-# Setup the init scripts
-cat <<EOF >/tmp/consul_upstart
-description "Consul Agent"
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-respawn
-
-script
-  if [ -f "/etc/service/consul" ]; then
-    . /etc/service/consul
-  fi
-
-  # Make sure to use all our CPUs, because Vault can block a scheduler thread
-  export GOMAXPROCS=`nproc`
-  BIND=`ifconfig eth0 | grep "inet addr" | awk '{ print substr($2,6) }'`
-  exec /usr/local/bin/consul agent \
-    -join=${consul_cluster} \
-    -bind=\$${BIND} \
-    -config-dir="/etc/consul.d" \
-    -data-dir=/opt/consul/data \
-    -client 0.0.0.0 \
-    >>/var/log/consul.log 2>&1
-end script
-EOF
-
-cat <<EOF >/tmp/vault_upstart
-description "Vault server"
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-respawn
-
-script
-  if [ -f "/etc/service/vault" ]; then
-    . /etc/service/vault
-  fi
-
-  # Make sure to use all our CPUs, because Vault can block a scheduler thread
-  export GOMAXPROCS=`nproc`
-
-  exec /usr/local/bin/vault server \
-    -config=/etc/vault.d \
-    \$${VAULT_FLAGS} \
-    >>/var/log/vault.log 2>&1
-end script
-EOF
-
-sudo mv /tmp/vault_upstart /etc/init/vault.conf
-sudo mv /tmp/consul_upstart /etc/init/consul.conf
-
 # Extra install steps (if any)
 ${extra-install}
 
@@ -106,21 +43,6 @@ sudo start consul
 
 # Start Vault
 sudo start vault
-export VAULT_ADDR=http://127.0.0.1:8200
-echo 'export VAULT_ADDR=http://127.0.0.1:8200 > /etc/profile.d/vault.sh'
-
-function vault_init {
-  consul kv put service/vault-${hash}/locked true
-  root_token=$$(/usr/local/bin/vault operator init -stored-shares=1 -recovery-shares=1 -recovery-threshold=1 -key-shares=1 -key-threshold=1 | grep 'Initial Root Token: '| awk '{print $$NF }')
-  consul kv get service/vault-${hash}/token || consul kv put service/vault-${hash}/token $${root_token}
-  sudo stop vault
-  sudo start vault
-}
-
-
-consul kv get service/vault-${hash}/locked || vault_init
-sudo restart vault
-
 export VAULT_ADDR=http://127.0.0.1:8200
 echo 'export VAULT_ADDR=http://127.0.0.1:8200 > /etc/profile.d/vault.sh'
 
@@ -136,7 +58,6 @@ function vault_init {
   echo "Startinv Vault"
   sudo start vault
 }
-
 
 consul kv get service/vault-${hash}/locked 2>/dev/null || vault_init
 sudo restart vault

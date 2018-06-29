@@ -70,3 +70,5 @@ variable "env" {}
 variable "consul_cluster_sg" {}
 
 variable "vault_license" {}
+
+variable "install_type" {}

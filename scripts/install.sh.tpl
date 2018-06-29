@@ -86,7 +86,10 @@ function vault_init {
   sudo start vault
 }
 
-consul kv get service/vault-${hash}/locked 2>/dev/null || vault_init
-sudo restart vault
+if [ "${install_type}" == "enterprise" ]
+then
+  consul kv get service/vault-${hash}/locked 2>/dev/null || vault_init
+  sudo restart vault
 
-vault write sys/license text=${vault_license}
+  vault write sys/license text=${vault_license}
+fi

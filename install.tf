@@ -10,5 +10,6 @@ resource "template_file" "install" {
     datacenter     = "${var.consul_datacenter}"
     env            = "${var.env}"
     vault_license  = "${var.vault_license}"
+    install_type   = "${var.install_type}"
   }
 }

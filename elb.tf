@@ -1,5 +1,5 @@
 resource "aws_elb" "vault" {
-  name                        = "vault"
+  name                        = "vault-${lookup(var.resource_tags, "ClusterName")}-${lookup(var.resource_tags, "Owner")}"
   connection_draining         = true
   connection_draining_timeout = 400
   internal                    = true
